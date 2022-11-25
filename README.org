@@ -49,12 +49,12 @@ There are many VCS tools, but our choice is going to be git, the de-facto standa
 
 Use git correctly and your peace of mind will reach nirvana levels.
 Do not be fooled, though, as git's power is only surpassed by its dangerousness.
-Think of git as a chainsaw; hand it to an experienced lumberjack and you will be warm next winter, but let a drunk monkey take care of it and see what happens...
-Gits is infamous for its obtuse syntax, with command names that transmit no information or are misleading[fn:: src_bash[:exports code]{git cherry-pick} is an actual command.] and lots of contextual behavior[fn:: The command src_bash[:exports code]{git checkout} can do things like transport the entire project to a different point in time, delete a file, resurrect a file and more depending on the name we give it as next argument.]. Many times the same action can be performed in several ways and other times the same command can be used to deal with completely orthogonal situations.\\
+Think of git as a chainsaw; hand it to an experienced lumberjack and you will be warm next winter, but let a drunken monkey take care of it and see what happens...
+Gits is infamous for its obscure syntax, with command names that transmit no information or are misleading[fn:: src_bash[:exports code]{git cherry-pick} is an actual command.] and lots of contextual behavior[fn:: The command src_bash[:exports code]{git checkout} can do things like transport the entire project to a different point in time, delete a file, resurrect a file and more depending on the name we give it as next argument.]. Many times the same action can be performed in several ways and other times the same command can be used to deal with completely orthogonal situations.\\
 These situations may leave you wondering about the strange design choices of git. The key here is that there was (kinda) not a design choice involved. Git's command line interface (CLI) evolved organically over the years to accommodate new necessities[fn:: Git was created by Linus Torvalds to version control the Linux kernel codebase.] and most of the time this explains its oddities.\\
 You are not forced, though, to use git's CLI to leverage git. There are several interfaces, textual and graphical, which use git under the hood, calling it for you when dealing with the typical workflows in a version-controlled project. Most IDEs have one (like VS code or emacs[fn:: The one in emacs is called [[https://magit.vc/][magit]], and it is life-changing]), and there are also standalone ones (like Github Desktop).\\
 In the following lessons[fn:: There are countless resources on git online, GitHub provides a [[https://github.com/git-guides][good one]], [[https://git-scm.com][git-scm]] is also really good.] we will learn the basics of git, which will greatly improve your personal workflow and the way you collaborate with others when dealing with text-based files, such as latex papers, reports and software.
-Come with me to the depths of git hell (and actual concept that we will cover later) and lets have fun.
+Come with me to the depths of git hell (and actual concept that we will cover later) and let's have fun.
 
 
 * Why do you need a distributed version control system (VCS)?
@@ -66,7 +66,7 @@ Some benefits of a VCS:
 5. Each developer keeps and maintains a local copy, which are only merged after validation.
 6. Allows to visit a snapshot of the project at any point in time.
    
-Maybe these are a little abstract and you are not convinced, I will present to you a couple of nightmarish short stories that will make you cry for a VCS:
+Maybe these are a little abstract and you are not convinced, I will present to you a couple of nightmarish short stories that will make you cry out for a VCS:
 ** The journal
 Five collaborators are working on a draft for a new paper in \LaTeX. Each of them is working on a different section, but often modify other ones (introduction, abstract...).
    
@@ -91,14 +91,14 @@ You religiously check your results and after a tedious process of software archa
 It has been at least a year since the software escaped your control when you emailed some version of it. You no longer have any recollection, let alone a proper log, of what changes occurred when. You do not even know if the bug happened before or after the last time you shared the code. As a matter of fact, the exact code used for some of the articles does not exist anymore, as it was overwritten during its evolution[fn:: God forbid some hard drive failed during this time and you lost everything.].
    
 Once you find the problem, you can fix your personal version of the code by modifying just a couple of lines [fn:: The vast majority of bugs I have encountered are fixed by replacing just one or two characters.]. But...
-How much time will have to be spent finding out which articles will have to be retracted? How many hours will have to be spent on tracking the children of this software making sure they did not inherited your bug?
+How much time will have to be spent finding out which articles will have to be retracted? How many hours will have to be spent on tracking the children of this software making sure they did not inherit your bug?
 You do not know, because you now reside in a psychiatric institution.
    
 I can tell you, though, what the situation would have been if you and your peers would have had used version control (such as git or svn):
 1. You could have traveled to any point in the history of the software with a single src_bash[:exports code]{git checkout} call, allowing you to narrow the point in time (the commit in VCS terms) when the bug was introduced. 
-2. It would have took you a single command, src_bash[:exports code]{git blame}, to find out the exact second the bogus line of the code was introduced and by whom, with a comment explaining the rationale of the change.
-3. It would have take you less than a minute to push a commit (terms/git commands you will come to know later) that fixes the bug in your code.
-4. It would have took others 3 seconds to incorporate your fix in their own children versions (yes, even when they are descendants of your original code) with a combination of pulling, merging and cherry-picking (more terms/git commands that we will go through).
+2. It would have taken you a single command, src_bash[:exports code]{git blame}, to find out the exact second the bogus line of the code was introduced and by whom, with a comment explaining the rationale of the change.
+3. It would have taken you less than a minute to push a commit (terms/git commands you will come to know later) that fixes the bug in your code.
+4. It would have taken others 3 seconds to incorporate your fix in their own children versions (yes, even when they are descendants of your original code) with a combination of pulling, merging and cherry-picking (more terms/git commands that we will go through).
 5. Bonus: You use a platform like github, so your software lives in the cloud and is safe against any damage to your group's hardware.
 Granted, the severity of the second situation could have been reduced, if not avoided entirely, if you followed a healthy software development workflow that includes things like unit testing, thorough documentation, proper code comments, etc. But chances are that if you are not using version control you are also neglecting many of the rest.
 
@@ -161,7 +161,7 @@ Try to run the following in your terminal:
 #+end_src
 #+end_mdframed
 
-We can also create a repository of our own from a project which is not yet version controlled. Let us start by creating a simple folder structure
+We can also create a repository of our own from a project which is not yet version controlled. Lets start by creating a folder structure
 Lets start by creating a folder structure:
 #+begin_src  bash :exports code
   $ mkdir myRepo
@@ -206,7 +206,7 @@ We can typically refer to a commit just by the first characters, since in most r
 #+end_mdframed
 #+ATTR_LATEX: :options [style=detailbox]
 #+begin_mdframed
-Internally, git does not store the totality of the project at every commit, rather it stores the first version of the project and then a list of changes that take from one commit to the next.
+Internally, git does not store the totality of the project at every commit, rather it stores the first version of the project and then a list of changes that take it from one commit to the next.
 #+end_mdframed
 We can thus represent the history of a repository using a list of connected nodes (representing commits):
 
@@ -301,9 +301,9 @@ You will notice that once you checkout a commit git will always complain about b
 But before we go to branches, we are still lacking the power to modify the repository by adding a commit ourselves. Lets talk about that.
 ** Creating commits
 
-We are going to introduce some change to the repository we created before and append a new commit to it. Go back to the myRepo directory, where we created a file called README.md.
+We are going to introduce some change in the repository we created before and append a new commit to it. Go back to the myRepo directory, where we created a file called README.md.
 Creating a commit has two steps:
-1. Make git aware of the changes (creating or deleting a file is a change). We use the add command for this.
+1. Make git take the changes into account for the next commit (creating or deleting a file is a change). We use the add command for this.
 2. Pack the changes into a commit. We use the commit command for this.
 When we want to upload some new commits to a remote more steps are required, but for the moment our new repo has no remotes.\\
 First, lets ask git about the current status of the repo.
@@ -316,7 +316,7 @@ It will also tell us if there is currently some kind of inconsistency in the rep
   $ git status
 #+end_src
 There are a lot of ways to customize how status feeds you its information, try the help command!\\
-Pay close attention to the status output, git is very informative and its advise on how to proceed is usually really good.
+Pay close attention to the status output, git is very informative and its advice on how to proceed is usually really good.
 #+end_mdframed
 
 Try to run git status in the newly created repo. It will tell you that:
@@ -358,7 +358,7 @@ Git will ask you for your name and email to sign you commits. You can do so with
 
 *** Packing changes into a commit
 
-Try to add the README.md file in your new repo and run git status. You will see that the file, which was previously red and marked as untracked is now green under the section "Changes to be committed". So lets create a commit with the changes.
+Try to add the README.md file in your new repo and run git status. You will see that the file, which was previously red and marked as untracked is now green under the section "Changes to be committed". So let's create a commit with the changes.
 
 #+ATTR_LATEX: :options [style=examplebox]
 #+begin_mdframed

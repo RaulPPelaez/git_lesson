@@ -526,10 +526,161 @@ The diff command is quite powerful and has a lot of forms, for instance
 Will show the the differences between one commit and every other, including up to, the second one.
 #+end_mdframed
 
-   
 
-pull
-stash
-cherry-picking
-merge
+As long as you are the only contributor to the repo and you are contributing only using the same local copy every time then this workflow will be enough. However, when you are working with a remote Git repository, it is possible that other collaborators will push new commits to the repository while you are working on your local copy (see [[fig:graphbranchdiv]]). If this happens, your local repository will no longer be up to date with the remote repository, and you will need to incorporate the new changes from the remote repository into your local copy before you can push your own changes.
 
+
+#+begin_src dot :file img/graphbranchdiv.png :exports results
+      digraph G {
+    rankdir="LR";
+    bgcolor="white";
+    node[width=0.15, height=0.15, shape=circle, color=black, fontcolor=black];
+    edge[weight=2, arrowhead=normal, color=black];
+  node[group=main];
+          master[shape=none, label="remotes/origin/master"]
+    1 -> 2 -> 3 ->6->7;
+    7-> master[arrowhead=none];
+      node[group=branch];
+      other[shape=none, label="master"];
+      {rank=same; 3;4;}
+    3 -> 4->5;
+    5-> other[arrowhead=none];
+
+    }
+#+end_src
+
+#+NAME: fig:graphbranchdiv
+#+CAPTION: The local master branch its remote counterpart (remotes/origin/master) have diverged. An equivalent picture could be produced if we create two local branches, one could be the master branch and another a feature branch, in which we are testing some new functionality.
+#+RESULTS:
+[[file:img/graphbranchdiv.png]]
+
+
+If you were to run the git push command in this situation you would be prompted with an error similar to the following:
+
+#+begin_src bash :exports code
+$ git push origin master
+  To https://github.com/user/repo.git
+  ! [rejected]        master -> master (non-fast-forward)
+  error: failed to push some refs to 'https://github.com/user/repo.git'
+  hint: Updates were rejected because the tip of your current branch is behind
+  hint: its remote counterpart. Integrate the remote changes
+#+end_src
+
+Git cannot push your commits because there are already some other commits after the point where your local ones should go. In other words, the remote and the local copies of the master branch have diverged. We have to somehow *merge* both branches.
+In this situation we would have to first make our local copy aware of the new commits in the remote by using the git fetch command and then use the git merge command to unify both.
+
+#+ATTR_LATEX: :options [style=examplebox]
+#+begin_mdframed
+\mdfsubtitle{Merging changes from one branch into another}
+When working with Git, it is often necessary to merge changes from one branch into another. This can be useful when you want to combine the work you have done in one branch with the work of other collaborators in another branch, or when you want to incorporate changes from a remote branch into your local branch.
+
+The git merge command allows you to do this. To use the command, you specify the branch you want to merge and the branch you want to merge into, like this:
+#+begin_src bash :exports code
+  $ git merge [branch-to-merge] [branch-to-merge-into]
+#+end_src
+For example, if you have made some changes on your local feature branch and want to merge them into the main branch, you can use the following command:
+#+begin_src bash :exports code
+  $ git merge feature master
+#+end_src
+This will combine the changes from the feature branch into the master branch. If there are no conflicts between the changes in the two branches, git merge will automatically merge the changes and create a new commit to record the merge. However, if there are conflicts, git merge will stop and allow you to resolve the conflicts manually before continuing.
+
+#+end_mdframed
+Most of the time git will make a good job merging branches but there are situations in which conflicts will appear between two branches that require human interaction. For instance, when two collaborators have modified the same line of the same file, or when files have been moved around. In these cases git merge will give you a list of files that require manual handling.
+To resolve the conflicts, you will need to edit the affected files and remove the conflict markers that Git has inserted. Once you have resolved all the conflicts, you can use the git add command to stage the changes and then use the git commit command to commit the changes. 
+
+#+ATTR_LATEX: :options [style=examplebox]
+#+begin_mdframed
+\mdfsubtitle{Updating your local repository with changes from a remote repository}
+
+The git pull command is equivalent to running git fetch followed by git merge.
+To use the git pull command, you simply specify the remote repository and the branch you want to update, like this:
+#+begin_src bash :exports code
+$ git pull [remote] [branch]
+#+end_src
+For example, if you want to update your local master branch with the latest changes from the origin remote, you can use the following command:
+#+begin_src bash :exports code
+$ git pull origin master
+#+end_src
+
+This will fetch the latest changes from the origin/master branch and merge them into your local master branch.
+#+end_mdframed
+
+* Welcome to (git) hell
+Git hell is a situation that can arise when working with Git, where you are unable to merge or push changes because of conflicts or other issues. This can happen when multiple collaborators are working on the same codebase and making conflicting changes, or when you have made changes that are not compatible with the latest version of the code in the remote repository.
+
+Here is an example of a scenario that could lead to Git hell:
+1. You are working on a feature branch on your local repository and make several commits to your branch.
+2. Meanwhile, your collaborator makes changes to the master branch and pushes them to the remote repository.
+3. When you try to push your changes to the remote repository, you are unable to do so because the master branch has changed since you last pulled from the remote repository.
+4. You try to use git pull to update your local repository with the latest changes from the remote repository, but there are conflicts between your changes and the changes your collaborator has made.
+5. You are unable to resolve the conflicts automatically using git pull, so you have to manually resolve the conflicts.
+6. After resolving the conflicts, you try to push your changes again, but the remote repository has changed again since you last pulled, so there are more conflicts.
+
+In this scenario, you are unable to push your changes to the remote repository because of conflicts between your local changes and the changes made by your collaborator. This can be frustrating and time-consuming, and can lead to a situation where you are unable to make progress on your work. This is an example of Git hell.
+Nonetheless, if you have followed the lessons and the cards up until now, you have all the necessary tools to gat out of git hell.
+
+
+* Advanced functionality
+
+** Cherry-picking
+
+#+ATTR_LATEX: :options [style=examplebox]
+#+begin_mdframed
+\mdfsubtitle{Cherry-picking specific commits from one branch and applying them to another}
+The git cherry-pick command allows you to select specific commits from one branch and apply them to another branch, without merging the entire branch [fn:: You could mimic this behavior with a combination of checkout, branch and merge, tools you already know]. 
+
+To use the git cherry-pick command, you specify the commit hash of the commit you want to cherry-pick, like this:
+#+begin_src bash :exports code
+$ git cherry-pick [commit]
+#+end_src
+This will apply the changes from the specified commit to your current branch. If there are conflicts between the changes in the commit and the changes in your current branch, git will warn you and allow you to resolve the conflicts manually.
+#+end_mdframed
+
+** Stashing
+#+ATTR_LATEX: :options [style=examplebox]
+#+begin_mdframed
+\mdfsubtitle{Stashing your changes to switch to a different branch}
+The git stash command allows you to save your changes temporarily and switch to a different branch. This can be useful when you are working on a branch and need to switch to a different branch quickly, but you don't want to commit your changes or discard them.
+
+To use the git stash command, you simply run the command without any arguments, like this:
+#+begin_src bash :exports code
+$ git stash
+#+end_src
+
+This will save your changes to a temporary stash and reset your working tree to the latest commit on your current branch. You can then switch to a different branch and work on that branch, and your changes will be saved in the stash.
+
+When you are ready to restore your changes from the stash, you can use the git stash pop command, which will apply the changes from the stash and remove the stash from the list of stashes. For example:
+#+begin_src bash :exports code
+$ git stash pop
+#+end_src
+
+This will apply the changes from the stash and remove the stash from the list of stashes. You can also use the git stash list command to view a list of stashes and the git stash apply command to apply the changes from a stash without removing it from the list.
+#+end_mdframed
+
+** Rebasing
+
+Imagine the following situation:
+1. You are working on a feature branch and you have made several commits to the branch.
+2. Meanwhile, other collaborators have made changes to the master branch and pushed them to the remote repository.
+3. You want to incorporate the latest changes from the master branch into your feature branch to reduce the number of conflicts you will have to resolve when you try to merge your branch into master.
+To do this, you can run the git rebase command.
+This will move or combine the commits on the feature branch so that they are based on the latest commits in the master branch. If there are conflicts between the two branches, git will warn you and allow you to resolve the conflicts manually.
+After running the git rebase command, your feature branch will be more up-to-date and will have fewer conflicts with the master branch, making it easier to merge your branch into master when you are ready.
+#+ATTR_LATEX: :options [style=examplebox]
+#+begin_mdframed
+\mdfsubtitle{Rebase: Modifying the history of a branch}
+The git rebase command allows you to modify the history of a branch by moving or combining commits. This can be useful for cleaning up your branch history and making it easier to read, but it can also be dangerous because it can cause conflicts and can cause you to lose work if not used carefully.
+
+To use the git rebase command, you specify the branch you want to rebase and the branch you want to rebase onto, like this:
+#+begin_src bash :exports code
+$ git rebase [branch] [onto-branch]
+#+end_src
+For example, if you want to rebase your feature branch onto the master branch, you can use the following command:
+#+begin_src bash :exports code
+$ git rebase feature master
+#+end_src
+
+This will move or combine the commits on the feature branch so that they are based on the latest commits in the master branch. If there are conflicts between the two branches, git will warn you and allow you to resolve the conflicts manually. Note that this means that the commit hashes in the feature branch are invalidated and effectively created again. Thus, you are changing history. You should never rebase commits that have left your local copy at some point.
+
+The git rebase command is a powerful tool that allows you to modify the history of a branch. Use it carefully and only when you are familiar with the implications of rebasing, as it can cause conflicts and can cause you to lose work if not used correctly.
+#+end_mdframed
